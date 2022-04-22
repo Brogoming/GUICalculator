@@ -15,10 +15,31 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import java.lang.Math;
 
-public class calculatroFinal extends Application {
-	private TextField tfDisplay;    // display textfield
-	private Button[] btns;          // 24 buttons
-	private String[] btnLabels = {  // Labels of 24 buttons
+/**
+ * CalculatorGUI
+ * Description: A GUI of a calculator and how it is used
+ * GitURL: https://github.com/Brogoming/GUICalculator.git
+ * 
+ * @author kotag
+ * @since 2022.04.22
+ * @version 1.0 beta
+ */
+public class CalculatroGUI extends Application {
+	
+	/**
+	 * display textfield
+	 */
+	private TextField tfDisplay;
+	
+	/**
+	 * 24 buttons
+	 */
+	private Button[] btns;
+	
+	/**
+	 * Labels of 24 buttons
+	 */
+	private String[] btnLabels = {  
 			"+M", "-M", "MC", "MR", 
 			"PI", ".", "^X", "e^X",
 			"7", "8", "9", "+",
@@ -26,14 +47,30 @@ public class calculatroFinal extends Application {
 			"1", "2", "3", "x",
 			"C", "0", "=", "/",
 	};
-	// For computation
-	private double result = 0.0;      // Result of computation
-	private double memory = 0.0;		//Result of memory
-	private String inStr = "0";  // Input number as String
-	// Previous operator: ' '(nothing), '+', '-', '*', '/', '='
+
+	/**
+	 * Result of computation
+	 */
+	private double result = 0.0;  
+	
+	/**
+	 * default of memory
+	 */
+	private double memory = 0.0;		
+	
+	/**
+	 * Input number as String
+	 */
+	private String inStr = "0"; 
+	
+	/**
+	 * Previous operator: ' '(nothing), '+', '-', '*', '/', '='
+	 */
 	private char lastOperator = ' ';
 
-	// Event handler for all the 24 Buttons
+	/**
+	 * Event handler for all the 24 Buttons 
+	 */
 	EventHandler<ActionEvent> handler = evt -> {
 		String currentBtnLabel = ((Button)evt.getSource()).getText();
 		switch (currentBtnLabel) {
@@ -54,7 +91,7 @@ public class calculatroFinal extends Application {
 			}
 			break;
 
-			// Operator buttons: '+', '-', 'x', '/' and '='
+			// Operator buttons: '+', '-', 'x', '/', '=', 'X', 'P', 'E', 'A', 'S', and 'R'
 		case "+":
 			compute();
 			lastOperator = '+';
@@ -88,7 +125,6 @@ public class calculatroFinal extends Application {
 			compute();
 			break;
 			
-			// Operator buttons: 'A', 'S', 'M', 'R'
 		case "+M":
 			lastOperator = 'A';
 			compute();
@@ -97,14 +133,16 @@ public class calculatroFinal extends Application {
 			lastOperator = 'S';
 			compute();
 			break;
-		case "MC":
-			memory = 0.0; //clears the memory value
-			break;
 		case "MR":
 			lastOperator = 'R';
 			compute();
 			break;
 
+			//Clears the memory value
+		case "MC":
+			memory = 0.0; 
+			break; 
+			
 			// Clear button
 		case "C":
 			result = 0.0;
@@ -115,9 +153,11 @@ public class calculatroFinal extends Application {
 		}
 	};
 
-	// User pushes '+', '-', '*', '/' or '=' button.
-	// Perform computation on the previous result and the current input number,
-	// based on the previous operator.
+	/**
+	 * User pushes '+', '-', '*', '/', '=' 'X', 'P', 'E', 'A', 'S', and 'R' button.
+	 * Perform computation on the previous result and the current input number,
+	 * based on the previous operator.
+	 */
 	private void compute() {
 		double inNum = Double.parseDouble(inStr);
 		inStr = "0";
@@ -135,22 +175,24 @@ public class calculatroFinal extends Application {
 			// Keep the result for the next operation
 		} else if (lastOperator == 'P') { //the number PI
 			result = Math.PI;
-		} else if (lastOperator == 'X') { //to the power of X
+		} else if (lastOperator == 'X') { //result to the power of X
 			result = Math.pow(result, inNum);
 		} else if (lastOperator == 'E') { //e to the power of X
 			result = Math.exp(inNum);
-		} else if (lastOperator == 'A') { //+M
-			memory = memory + result;
-		} else if (lastOperator == 'S') { //-M
-			memory = memory - result;
-		} else if (lastOperator == 'R') { //recall
+		} else if (lastOperator == 'A') { //+M Add memory
+			memory += result;
+		} else if (lastOperator == 'S') { //-M subtract memory
+			memory -= result;
+		} else if (lastOperator == 'R') { //recall memory value
 			result = memory;
 		}
 		
 		tfDisplay.setText(result + "");
 	}
 
-	// Setup the UI
+	/**
+	 * Setup the UI
+	 */
 	@Override
 	public void start(Stage primaryStage) {
 		// Setup the Display TextField
@@ -158,8 +200,9 @@ public class calculatroFinal extends Application {
 		tfDisplay.setEditable(false);
 		tfDisplay.setAlignment(Pos.CENTER_RIGHT);
 
-		// Setup a GridPane for 4 column Buttons
+		// Setup a GridPane for 4x6 column Buttons
 		int numCols = 4;
+		int numRows = 6;
 		GridPane paneButton = new GridPane();
 		paneButton.setPadding(new Insets(15, 0, 15, 0));  // top, right, bottom, left
 		paneButton.setVgap(5);  // Vertical gap between nodes
@@ -173,8 +216,8 @@ public class calculatroFinal extends Application {
 			paneButton.getColumnConstraints().add(columns[i]);
 		}
 
-		// Setup 20 Buttons and add to GridPane; and event handler
-		btns = new Button[24];
+		// Setup 4x6 Buttons and add to GridPane; and event handler
+		btns = new Button[numRows * numCols];
 		for (int i = 0; i < btns.length; ++i) {
 			btns[i] = new Button(btnLabels[i]);
 			btns[i].setOnAction(handler);  // Register event handler
@@ -194,6 +237,11 @@ public class calculatroFinal extends Application {
 		primaryStage.show();
 	}
 
+	/**
+	 * calls the start method to show the GUI
+	 * 
+	 * @param args No command line input args are used for this application
+	 */
 	public static void main(String[] args) {
 		launch(args);
 	}
