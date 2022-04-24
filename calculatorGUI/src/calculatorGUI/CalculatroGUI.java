@@ -32,6 +32,11 @@ public class CalculatroGUI extends Application {
 	private TextField tfDisplay;
 	
 	/**
+	 * display textfield
+	 */
+	private TextField tfMemory;
+	
+	/**
 	 * 24 buttons
 	 */
 	private Button[] btns;
@@ -91,7 +96,7 @@ public class CalculatroGUI extends Application {
 			}
 			break;
 
-			// Operator buttons: '+', '-', 'x', '/', '=', 'X', 'P', 'E', 'A', 'S', and 'R'
+			// Operator buttons: '+', '-', 'x', '/', '=', 'X', 'P', 'E'
 		case "+":
 			compute();
 			lastOperator = '+';
@@ -125,36 +130,41 @@ public class CalculatroGUI extends Application {
 			compute();
 			break;
 			
+			//+M, -M, MC, and MR
 		case "+M":
-			lastOperator = 'A';
-			compute();
+			inStr = String.valueOf(memory);
+			tfDisplay.setText(memory + "");
+			memory = result + memory;
 			break;
 		case "-M":
-			lastOperator = 'S';
-			compute();
+			inStr = String.valueOf(memory);
+			tfDisplay.setText(memory + "");
+			memory = result - memory;
 			break;
 		case "MR":
-			lastOperator = 'R';
-			compute();
+			inStr = String.valueOf(memory);
+			tfDisplay.setText(memory + "");
 			break;
 
 			//Clears the memory value
 		case "MC":
 			memory = 0.0; 
+			tfDisplay.setText(memory + "");
 			break; 
 			
 			// Clear button
 		case "C":
-			result = 0.0;
+			result = 0;
 			inStr = "0";
 			lastOperator = ' ';
 			tfDisplay.setText("0");
 			break;
 		}
+		tfMemory.setText("Memory = " + memory);
 	};
 
 	/**
-	 * User pushes '+', '-', '*', '/', '=' 'X', 'P', 'E', 'A', 'S', and 'R' button.
+	 * User pushes '+', '-', '*', '/', '=' 'X', 'P', and 'E' button.
 	 * Perform computation on the previous result and the current input number,
 	 * based on the previous operator.
 	 */
@@ -179,12 +189,6 @@ public class CalculatroGUI extends Application {
 			result = Math.pow(result, inNum);
 		} else if (lastOperator == 'E') { //e to the power of X
 			result = Math.exp(inNum);
-		} else if (lastOperator == 'A') { //+M Add memory
-			memory += result;
-		} else if (lastOperator == 'S') { //-M subtract memory
-			memory -= result;
-		} else if (lastOperator == 'R') { //recall memory value
-			result = memory;
 		}
 		
 		tfDisplay.setText(result + "");
@@ -199,6 +203,10 @@ public class CalculatroGUI extends Application {
 		tfDisplay = new TextField("0");
 		tfDisplay.setEditable(false);
 		tfDisplay.setAlignment(Pos.CENTER_RIGHT);
+		
+		tfMemory = new TextField("Memory = 0.0");
+		tfMemory.setEditable(false);
+		tfMemory.setAlignment(Pos.CENTER_LEFT);
 
 		// Setup a GridPane for 4x6 column Buttons
 		int numCols = 4;
@@ -230,9 +238,12 @@ public class CalculatroGUI extends Application {
 		root.setPadding(new Insets(15, 15, 15, 15));  // top, right, bottom, left
 		root.setTop(tfDisplay);     // Top zone contains the TextField
 		root.setCenter(paneButton); // Center zone contains the GridPane of Buttons
+		root.setBottom(tfMemory); // Bottom zone contains the Label
 
 		// Set up scene and stage
-		primaryStage.setScene(new Scene(root, 300, 300));
+		Scene scene = new Scene(root, 300, 275);
+		scene.getStylesheets().add("CalcCSS.css"); //overrides all the current styles to the GUI
+		primaryStage.setScene(scene);
 		primaryStage.setTitle("JavaFX Calculator");
 		primaryStage.show();
 	}
