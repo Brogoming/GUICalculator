@@ -10,6 +10,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,26 +28,32 @@ import java.lang.Math;
  * @version 1.0 beta
  */
 public class CalculatroGUI extends Application {
-	
+
 	/**
 	 * display textfield
 	 */
 	private TextField tfDisplay;
-	
+
 	/**
 	 * display textfield
 	 */
-	private TextField tfMemory;
-	
+	private Text tMemory;
+
 	/**
 	 * 24 buttons
 	 */
-	private Button[] btns;
+	public static Button[] btns;
 	
+	/**
+	 * sets up the root BorderPane
+	 */
+	public static BorderPane root = new BorderPane();
+
 	/**
 	 * Labels of 24 buttons
 	 */
-	private String[] btnLabels = {  
+	public static String[] btnLabels = {  
+			"Light", "Dark", "Kota", "Reg",
 			"+M", "-M", "MC", "MR", 
 			"PI", ".", "^X", "e^X",
 			"7", "8", "9", "+",
@@ -57,17 +66,17 @@ public class CalculatroGUI extends Application {
 	 * Result of computation
 	 */
 	private double result = 0.0;  
-	
+
 	/**
 	 * default of memory
 	 */
 	private double memory = 0.0;		
-	
+
 	/**
 	 * Input number as String
 	 */
 	private String inStr = "0"; 
-	
+
 	/**
 	 * Previous operator: ' '(nothing), '+', '-', '*', '/', '='
 	 */
@@ -129,17 +138,14 @@ public class CalculatroGUI extends Application {
 			lastOperator = 'P';
 			compute();
 			break;
-			
-			//+M, -M, MC, and MR
+
 		case "+M":
-			inStr = String.valueOf(memory);
-			tfDisplay.setText(memory + "");
-			memory = result + memory;
+			memory += result;
+			tMemory.setText("Memory = " + memory);
 			break;
 		case "-M":
-			inStr = String.valueOf(memory);
-			tfDisplay.setText(memory + "");
-			memory = result - memory;
+			memory -= result;
+			tMemory.setText("Memory = " + memory);
 			break;
 		case "MR":
 			inStr = String.valueOf(memory);
@@ -149,9 +155,9 @@ public class CalculatroGUI extends Application {
 			//Clears the memory value
 		case "MC":
 			memory = 0.0; 
-			tfDisplay.setText(memory + "");
+			tMemory.setText("Memory = " + memory);
 			break; 
-			
+
 			// Clear button
 		case "C":
 			result = 0;
@@ -159,8 +165,69 @@ public class CalculatroGUI extends Application {
 			lastOperator = ' ';
 			tfDisplay.setText("0");
 			break;
+
+			//changes the colors of the calculator when pressed
+		case "Light":
+			for (int i = 0; i < btns.length; ++i) {
+				switch(btnLabels[i]) {
+				case "+M": case "-M": case "MC": case "MR":
+					btns[i].setStyle("-fx-color: #BBDCDB");
+					break;
+				case "0": case "1": case "2": case "3": case "4":
+				case "5": case "6": case "7": case "8": case "9":
+					btns[i].setStyle("-fx-color: #BBCCDC");
+					break;
+				case "PI": case".": case"^X": case"e^X":
+				case "+": case "-": case "x": case "/":
+				case "C": case "=":
+					btns[i].setStyle("-fx-color: #BBDCCB");
+					break;
+				}
+				root.setStyle("-fx-background-color: white");
+			}
+			break;
+		case "Dark":
+			for (int i = 0; i < btns.length; ++i) {
+				switch(btnLabels[i]) {
+				case "+M": case "-M": case "MC": case "MR":
+					btns[i].setStyle("-fx-color: #234343");
+					break;
+				case "0": case "1": case "2": case "3": case "4":
+				case "5": case "6": case "7": case "8": case "9":
+					btns[i].setStyle("-fx-color: #233443");
+					break;
+				case "PI": case".": case"^X": case"e^X":
+				case "+": case "-": case "x": case "/":
+				case "C": case "=":
+					btns[i].setStyle("-fx-color: #234332");
+					break;
+				}
+				root.setStyle("-fx-background-color: gray");
+			}
+			break;
+		case "Kota":
+			for (int i = 0; i < btns.length; ++i) {
+				switch(btnLabels[i]) {
+				case "+M": case "-M": case "MC": case "MR":
+					btns[i].setStyle("-fx-color: #008006");
+					break;
+				case "0": case "1": case "2": case "3": case "4":
+				case "5": case "6": case "7": case "8": case "9":
+					btns[i].setStyle("-fx-color: #800600");
+					break;
+				case "PI": case".": case"^X": case"e^X":
+				case "+": case "-": case "x": case "/":
+				case "C": case "=":
+					btns[i].setStyle("-fx-color: #060080");
+					break;
+				}
+				root.setStyle("-fx-background-color: #807A00");
+			}
+			break;
+		case "Reg":
+			Reg();
+			break;
 		}
-		tfMemory.setText("Memory = " + memory);
 	};
 
 	/**
@@ -190,7 +257,7 @@ public class CalculatroGUI extends Application {
 		} else if (lastOperator == 'E') { //e to the power of X
 			result = Math.exp(inNum);
 		}
-		
+
 		tfDisplay.setText(result + "");
 	}
 
@@ -203,14 +270,13 @@ public class CalculatroGUI extends Application {
 		tfDisplay = new TextField("0");
 		tfDisplay.setEditable(false);
 		tfDisplay.setAlignment(Pos.CENTER_RIGHT);
-		
-		tfMemory = new TextField("Memory = 0.0");
-		tfMemory.setEditable(false);
-		tfMemory.setAlignment(Pos.CENTER_LEFT);
+
+		tMemory = new Text("Memory = 0.0");
+		tMemory.setTextAlignment(TextAlignment.LEFT);
 
 		// Setup a GridPane for 4x6 column Buttons
 		int numCols = 4;
-		int numRows = 6;
+		int numRows = 7;
 		GridPane paneButton = new GridPane();
 		paneButton.setPadding(new Insets(15, 0, 15, 0));  // top, right, bottom, left
 		paneButton.setVgap(5);  // Vertical gap between nodes
@@ -223,8 +289,16 @@ public class CalculatroGUI extends Application {
 			columns[i].setFillWidth(true);  // Ask nodes to fill space for column
 			paneButton.getColumnConstraints().add(columns[i]);
 		}
+		// Setup 7 columns of equal height, fill parent
+		RowConstraints[] rows = new RowConstraints[numRows];
+		for (int i = 0; i < numRows; ++i) {
+			rows[i] = new RowConstraints();
+			rows[i].setVgrow(Priority.ALWAYS) ;  // Allow column to grow
+			rows[i].setFillHeight(true);  // Ask nodes to fill space for column
+			paneButton.getRowConstraints().add(rows[i]);
+		}
 
-		// Setup 4x6 Buttons and add to GridPane; and event handler
+		// Setup 4x7 Buttons and add to GridPane; and event handler
 		btns = new Button[numRows * numCols];
 		for (int i = 0; i < btns.length; ++i) {
 			btns[i] = new Button(btnLabels[i]);
@@ -232,20 +306,48 @@ public class CalculatroGUI extends Application {
 			btns[i].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);  // full-width
 			paneButton.add(btns[i], i % numCols, i / numCols);  // control, col, row
 		}
+		
+		btns[0].setStyle("-fx-color: white");
+		btns[1].setStyle("-fx-color: black");
+		btns[2].setStyle("-fx-color: red");
+		btns[3].setStyle("-fx-color: blue");
+		Reg(); //calls this method at the default
 
 		// Setup up the scene graph rooted at a BorderPane (of 5 zones)
-		BorderPane root = new BorderPane();
+		
 		root.setPadding(new Insets(15, 15, 15, 15));  // top, right, bottom, left
 		root.setTop(tfDisplay);     // Top zone contains the TextField
 		root.setCenter(paneButton); // Center zone contains the GridPane of Buttons
-		root.setBottom(tfMemory); // Bottom zone contains the Label
+		root.setBottom(tMemory); // Bottom zone contains the Label
 
 		// Set up scene and stage
-		Scene scene = new Scene(root, 300, 275);
-		scene.getStylesheets().add("CalcCSS.css"); //overrides all the current styles to the GUI
+		Scene scene = new Scene(root, 300, 300);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("JavaFX Calculator");
 		primaryStage.show();
+	}
+
+	/**
+	 * Sets the button colors to regular colors
+	 */
+	private static void Reg() {
+		for (int i = 0; i < btns.length; ++i) {
+			switch(btnLabels[i]) {
+			case "+M": case "-M": case "MC": case "MR":
+				btns[i].setStyle("-fx-color: #00A1A4");
+				break;
+			case "0": case "1": case "2": case "3": case "4":
+			case "5": case "6": case "7": case "8": case "9":
+				btns[i].setStyle("-fx-color: #004FA4");
+				break;
+			case "PI": case".": case"^X": case"e^X":
+			case "+": case "-": case "x": case "/":
+			case "C": case "=":
+				btns[i].setStyle("-fx-color: #00A455");
+				break;
+			}
+		}
+		root.setStyle("-fx-background-color: #B7C2BD");
 	}
 
 	/**
